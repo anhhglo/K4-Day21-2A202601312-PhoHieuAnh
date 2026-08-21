@@ -13,6 +13,9 @@ Use Python 3.10 or newer. Deployment requires a positive-class F1 score of at le
 The GitHub Actions pipeline has four jobs: `unit-test`, `train`, `quality-gate`, and
 `release`.
 
+The ordered screenshot evidence and one-page A4 report are in
+[`submission/evidence/`](submission/evidence/README.md).
+
 ## Deployed environment
 
 The released service runs as `income-api` on Compute Engine VM `income-api` in

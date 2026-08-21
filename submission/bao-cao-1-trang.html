@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Báo cáo K4 - CI/CD cho AI Systems</title>
+  <style>
+    @page { size: A4; margin: 11mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #172033;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 9.4pt;
+      line-height: 1.32;
+      background: white;
+    }
+    h1 { margin: 0 0 3px; font-size: 20pt; color: #123b6d; }
+    .subtitle { color: #52647a; margin-bottom: 9px; }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .metric {
+      padding: 7px 8px;
+      border: 1px solid #c9d7e8;
+      border-radius: 7px;
+      background: #f5f9ff;
+    }
+    .metric b { display: block; font-size: 13pt; color: #0a5aa8; }
+    .metric span { color: #5c6878; font-size: 8.2pt; }
+    h2 {
+      margin: 8px 0 4px;
+      padding-bottom: 2px;
+      border-bottom: 1px solid #d8e1ec;
+      font-size: 11.7pt;
+      color: #123b6d;
+    }
+    p { margin: 3px 0 5px; }
+    table { width: 100%; border-collapse: collapse; margin: 4px 0 6px; font-size: 8.7pt; }
+    th, td { border: 1px solid #cbd5e1; padding: 4px 5px; text-align: center; }
+    th { color: white; background: #245b91; }
+    td:first-child { text-align: left; }
+    tr.selected td { background: #e9f7ef; font-weight: 600; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    ul { margin: 3px 0 4px; padding-left: 17px; }
+    li { margin: 2px 0; }
+    code { font-family: Consolas, monospace; color: #7a224a; font-size: 8.7pt; }
+    .evidence {
+      margin-top: 6px;
+      padding: 6px 8px;
+      border-left: 4px solid #2b8a3e;
+      background: #f1faf3;
+      font-size: 8.4pt;
+    }
+    .footer { margin-top: 6px; color: #667085; font-size: 7.8pt; text-align: right; }
+  </style>
+</head>
+<body>
+  <h1>K4 — CI/CD cho AI Systems</h1>
+  <div class="subtitle">Adult Income · MLflow · DVC · GitHub Actions · GCP Compute Engine</div>
+
+  <div class="summary">
+    <div class="metric"><b>0,7149</b><span>F1 · 22.361 mẫu</span></div>
+    <div class="metric"><b>0,7354</b><span>F1 · 44.722 mẫu</span></div>
+    <div class="metric"><b>24/24</b><span>unit tests đạt</span></div>
+    <div class="metric"><b>4 jobs</b><span>pipeline xanh</span></div>
+  </div>
+
+  <h2>1. Thí nghiệm và bộ siêu tham số được chọn</h2>
+  <table>
+    <thead><tr><th>Cấu hình</th><th>n_estimators</th><th>learning_rate</th><th>max_depth</th><th>F1 lớp dương</th><th>Accuracy</th></tr></thead>
+    <tbody>
+      <tr><td>Baseline</td><td>100</td><td>0,1</td><td>3</td><td>0,710900</td><td>0,878</td></tr>
+      <tr><td>Yếu</td><td>50</td><td>0,05</td><td>2</td><td>0,605128</td><td>0,846</td></tr>
+      <tr class="selected"><td>Được chọn</td><td>200</td><td>0,1</td><td>5</td><td>0,714932</td><td>0,874</td></tr>
+    </tbody>
+  </table>
+  <p>Chọn <code>200 / 0,1 / 5</code> vì có F1 cao nhất trong ba thí nghiệm và vượt quality gate 0,65. <code>random_state=42</code> được cố định để các lần chạy có thể so sánh.</p>
+
+  <div class="two-col">
+    <section>
+      <h2>2. Vì sao dùng F1 thay vì accuracy?</h2>
+      <p>Chỉ 24,8% mẫu thuộc lớp thu nhập cao. Mô hình luôn đoán lớp thấp đã đạt accuracy <b>0,752</b> nhưng F1 lớp dương bằng <b>0</b>. Bằng chứng thực tế: cấu hình cố ý yếu <code>1 / 0,01 / 1</code> cho đúng cặp số này; Quality Gate thất bại và Release bị bỏ qua.</p>
+      <p>F1 cân bằng precision và recall của lớp thiểu số nên bảo vệ mục tiêu thật: phát hiện người có thu nhập cao, thay vì được “thưởng” vì đoán lớp đa số.</p>
+    </section>
+    <section>
+      <h2>3. 22.361 so với 44.722 mẫu</h2>
+      <p>F1 tăng từ <b>0,714932</b> lên <b>0,735426</b>, tương đương <b>+0,020494</b>; accuracy tăng từ 0,874 lên 0,882. Mức tăng nhỏ là hợp lý vì batch 2 được lấy từ cùng nguồn và cùng phân phối với batch 1.</p>
+      <p>Kết quả quan trọng hơn là commit chỉ thay đổi <code>train_batch1.csv.dvc</code> đã tự động chạy lại Unit Test → Train → Quality Gate → Release mà không thao tác tay.</p>
+    </section>
+  </div>
+
+  <h2>4. Khó khăn và cách giải quyết</h2>
+  <ul>
+    <li><b>DVC/Git:</b> giữ CSV ngoài Git, commit đúng ba con trỏ <code>.dvc</code> và đẩy object lên GCS trước khi push commit.</li>
+    <li><b>Quality gate:</b> chuyển output GitHub Actions từ chuỗi sang <code>float</code>; candidate chỉ được promote sau khi F1 đạt ngưỡng.</li>
+    <li><b>Serving:</b> Release dùng <code>systemctl restart</code> để model mới thực sự được nạp, tránh health check đi qua process cũ.</li>
+    <li><b>Bảo mật:</b> sau khi lấy bằng chứng, external IP và rule public 8080 đã bị tháo/tắt; kiểm tra VM hiện thực hiện qua IAP.</li>
+  </ul>
+
+  <div class="evidence">
+    <b>Bằng chứng:</b> initial run <code>32507086104</code> · data commit run <code>32508377146</code> · gate-failed run <code>32509743817</code> · restored run <code>32510047862</code> · model <code>artifacts/current/model.joblib</code> (915.688 bytes).
+  </div>
+  <div class="footer">Repo: anhhglo/K4-Day21-2A202601312-PhoHieuAnh</div>
+</body>
+</html>

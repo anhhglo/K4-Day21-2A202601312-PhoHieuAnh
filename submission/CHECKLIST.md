@@ -1,5 +1,9 @@
 # Submission Screenshot Checklist
 
+An automated, ordered evidence set is available in
+[`submission/evidence/`](evidence/README.md). Items captured from live browser pages
+or freshly executed CLI commands are labelled by provenance; no UI was fabricated.
+
 Capture screenshots in this order. Include the browser or terminal context that makes
 the project, resource, and result identifiable; redact any credentials or tokens.
 
