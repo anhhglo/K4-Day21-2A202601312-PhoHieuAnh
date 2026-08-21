@@ -14,16 +14,20 @@ the project, resource, and result identifiable; redact any credentials or tokens
    green and the F1 gate evidence visible.
 5. **Data-expansion CI/CD run** — GitHub Actions run `32508377146` for commit
    `abb5dcc`; capture all four green jobs and the new F1 `0.7354260089686099`.
-6. **Cloud artifact** — Cloud Storage object
+6. **Quality Gate rejection** — GitHub Actions run `32509743817` for commit
+   `2643466`; capture Unit Test and Train passing, Quality Gate failing with
+   `f1_score 0.0000 < 0.65`, and Release skipped.
+7. **Cloud artifact** — Cloud Storage object
    `artifacts/current/model.joblib` in bucket `k4-day21-2a202601312-phohieuanh`.
-7. **Compute deployment** — Compute Engine VM `income-api` in project
+8. **Compute deployment** — Compute Engine VM `income-api` in project
    `track2-day16-01312`, zone `us-central1-a`, with external IP `34.42.113.234`.
-8. **Service health** — terminal or API client response from `GET /healthz` showing
+9. **Service health** — terminal or API client response from `GET /healthz` showing
    `{"status":"ok"}` and, if available, `systemctl status income-api`.
-9. **Low-income score** — `POST /score` response containing `prediction: 0` and
+10. **Low-income score** — `POST /score` response containing `prediction: 0` and
    `label: thu_nhap_thap`.
-10. **High-income score** — `POST /score` response containing `prediction: 1` and
+11. **High-income score** — `POST /score` response containing `prediction: 1` and
     `label: thu_nhap_cao`.
-11. **Final evidence set** — a final view that connects the successful workflow,
-    promoted Cloud Storage artifact, VM/service, and both score responses. Verify no
-    secret values are visible before upload.
+12. **Final evidence set** — a final view that connects the successful workflow,
+    restored-parameter run `32510047862`, promoted Cloud Storage artifact,
+    VM/service, and both score responses. Verify no secret values are visible before
+    upload.

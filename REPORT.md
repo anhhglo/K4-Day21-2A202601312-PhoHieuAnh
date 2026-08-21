@@ -50,6 +50,20 @@ All four jobs completed successfully. Its holdout F1 is `0.7354260089686099`
 same source distribution; the important result is that a data-pointer-only commit
 completed the entire train, gate, and release path without a manual intermediate step.
 
+## Quality-gate rejection evidence
+
+Commit `2643466` deliberately set an unusable configuration (`1`, `0.01`, `1`).
+Workflow run
+[`32509743817`](https://github.com/anhhglo/K4-Day21-2A202601312-PhoHieuAnh/actions/runs/32509743817)
+recorded F1 `0.0000` (local accuracy `0.752`), failed Quality Gate at the `0.65`
+threshold, and skipped Release. The production object's generation remained
+`1787333919166004` before and after the rejected run, proving that the weak candidate
+was not promoted. Commit `f3e1ce7` then restored the selected `200`/`0.1`/`5`
+configuration. The restoration workflow
+[`32510047862`](https://github.com/anhhglo/K4-Day21-2A202601312-PhoHieuAnh/actions/runs/32510047862)
+completed all four jobs successfully and promoted production object generation
+`1787334701712627`.
+
 ## Difficulties and resolutions
 
 The main issues were restricted network access during the UCI download, DVC's need
