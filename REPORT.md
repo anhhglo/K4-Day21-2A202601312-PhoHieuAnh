@@ -44,6 +44,16 @@ Commit `abb5dcc` adds 22,361 records, expanding the training data from 22,361 to
 triggers a new CI/CD training cycle rather than assuming that more data improves F1.
 The corresponding workflow is
 [`32508377146`](https://github.com/anhhglo/K4-Day21-2A202601312-PhoHieuAnh/actions/runs/32508377146).
-At documentation time it is **in progress**; its final F1, quality-gate outcome, and
-deployment status are pending. Once completed, compare that reported F1 directly with
-the initial `0.7149321266968326` before claiming improvement or promotion.
+All four jobs completed successfully. Its holdout F1 is `0.7354260089686099`
+(accuracy `0.882`), an increase of about `0.0205` from the initial
+`0.7149321266968326`. The improvement is modest because both batches came from the
+same source distribution; the important result is that a data-pointer-only commit
+completed the entire train, gate, and release path without a manual intermediate step.
+
+## Difficulties and resolutions
+
+The main issues were restricted network access during the UCI download, DVC's need
+to manage its own data ignore entries, and ensuring a passing health check could not
+hide a stale in-memory model. Network operations were rerun with scoped approval,
+DVC-specific ignore exceptions preserved both tracking and CSV safety, and Release
+now explicitly restarts `income-api` after promoting every approved model.

@@ -13,8 +13,7 @@ the project, resource, and result identifiable; redact any credentials or tokens
    `32507086104`, with all four jobs (`unit-test`, `train`, `quality-gate`, `release`)
    green and the F1 gate evidence visible.
 5. **Data-expansion CI/CD run** — GitHub Actions run `32508377146` for commit
-   `abb5dcc`; capture the completed status and new metric when it finishes. Until then,
-   show its current in-progress state without calling it successful.
+   `abb5dcc`; capture all four green jobs and the new F1 `0.7354260089686099`.
 6. **Cloud artifact** — Cloud Storage object
    `artifacts/current/model.joblib` in bucket `k4-day21-2a202601312-phohieuanh`.
 7. **Compute deployment** — Compute Engine VM `income-api` in project
