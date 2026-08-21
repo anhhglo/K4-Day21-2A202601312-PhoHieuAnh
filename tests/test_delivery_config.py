@@ -27,6 +27,14 @@ def test_release_preloads_the_vm_host_key_before_strict_ssh_deployment():
     assert "StrictHostKeyChecking=yes" in workflow
 
 
+def test_release_restarts_income_api_after_installing_the_new_service_unit():
+    workflow = WORKFLOW_PATH.read_text()
+
+    assert "sudo systemctl enable income-api" in workflow
+    assert "sudo systemctl restart income-api" in workflow
+    assert "sudo systemctl enable --now income-api" not in workflow
+
+
 def test_income_api_service_restarts_with_documented_runtime_configuration():
     service = SERVICE_PATH.read_text()
 

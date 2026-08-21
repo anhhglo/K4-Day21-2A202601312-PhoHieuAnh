@@ -120,7 +120,8 @@ jobs:
           sed "s|__SERVER_USER__|$SERVER_USER|g" /tmp/income-api.service | sudo tee /etc/systemd/system/income-api.service >/dev/null
           printf 'ARTIFACT_BUCKET=%s\nMODEL_PATH=models/model.joblib\n' "$ARTIFACT_BUCKET" | sudo tee /etc/income-api.env >/dev/null
           sudo systemctl daemon-reload
-          sudo systemctl enable --now income-api
+          sudo systemctl enable income-api
+          sudo systemctl restart income-api
           REMOTE
       - name: Wait for the service health check
         env:
