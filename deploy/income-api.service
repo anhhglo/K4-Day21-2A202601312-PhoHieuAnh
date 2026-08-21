@@ -1,0 +1,15 @@
+[Unit]
+Description=Income Model Inference Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=__SERVER_USER__
+WorkingDirectory=/home/__SERVER_USER__/income-api
+EnvironmentFile=/etc/income-api.env
+ExecStart=/home/__SERVER_USER__/income-api/.venv/bin/uvicorn src.serve:app --host 0.0.0.0 --port 8080
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
