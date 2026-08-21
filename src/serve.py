@@ -7,7 +7,7 @@ from typing import Any
 import joblib
 from fastapi import FastAPI, HTTPException, Request
 from google.cloud import storage
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 MODEL_OBJECT = "artifacts/current/model.joblib"
@@ -16,6 +16,16 @@ LABELS = {0: "thu_nhap_thap", 1: "thu_nhap_cao"}
 
 class ScoreRequest(BaseModel):
     features: list[float]
+
+    @field_validator("features", mode="before")
+    @classmethod
+    def validate_numeric_features(cls, features: object) -> object:
+        if not isinstance(features, list) or any(
+            isinstance(feature, bool) or not isinstance(feature, (int, float))
+            for feature in features
+        ):
+            raise ValueError("features must contain only JSON numbers")
+        return features
 
 
 def download_model() -> Path:

@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -48,3 +49,15 @@ def test_score_rejects_requests_without_exactly_ten_features():
         response = client.post("/score", json={"features": [0.0] * 9})
 
     assert response.status_code == 400
+
+
+@pytest.mark.parametrize("invalid_feature", ["1.0", True])
+def test_score_rejects_non_numeric_json_feature_elements(invalid_feature):
+    app = create_app(lambda: FakeModel(0))
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/score", json={"features": [invalid_feature] + [0.0] * 9}
+        )
+
+    assert response.status_code == 422
