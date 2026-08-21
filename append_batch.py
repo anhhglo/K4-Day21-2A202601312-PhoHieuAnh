@@ -45,3 +45,11 @@ def append_batch(path1: str | Path, path2: str | Path) -> None:
         os.replace(temporary_path, batch1_path)
     finally:
         temporary_path.unlink(missing_ok=True)
+
+
+def main() -> None:
+    append_batch("data/train_batch1.csv", "data/train_batch2.csv")
+
+
+if __name__ == "__main__":
+    main()

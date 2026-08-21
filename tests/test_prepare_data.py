@@ -105,3 +105,25 @@ def test_append_batch_rejects_contained_rows_in_a_different_order(tmp_path):
         append_batch(batch1_path, batch2_path)
 
     assert len(pd.read_csv(batch1_path)) == 4
+
+
+def test_append_batch_main_uses_default_paths_and_rejects_second_run(
+    tmp_path, monkeypatch
+):
+    from append_batch import main
+
+    data_directory = tmp_path / "data"
+    data_directory.mkdir()
+    batch1_path = data_directory / "train_batch1.csv"
+    batch2_path = data_directory / "train_batch2.csv"
+    _canonical_frame(4).to_csv(batch1_path, index=False)
+    _canonical_frame(4).assign(age=lambda frame: frame["age"] + 100).to_csv(
+        batch2_path, index=False
+    )
+    monkeypatch.chdir(tmp_path)
+
+    main()
+
+    assert len(pd.read_csv(batch1_path)) == 8
+    with pytest.raises(ValueError, match="^train_batch1 already contains batch2$"):
+        main()
