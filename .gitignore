@@ -4,7 +4,6 @@
 .secrets/
 .env
 .dvc/config.local
-data/*.csv
 models/
 outputs/
 mlflow.db

@@ -1,0 +1,4 @@
+[core]
+    remote = labstore
+['remote "labstore"']
+    url = gs://k4-day21-2a202601312-phohieuanh/dvc
