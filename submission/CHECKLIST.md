@@ -20,7 +20,8 @@ the project, resource, and result identifiable; redact any credentials or tokens
 7. **Cloud artifact** — Cloud Storage object
    `artifacts/current/model.joblib` in bucket `k4-day21-2a202601312-phohieuanh`.
 8. **Compute deployment** — Compute Engine VM `income-api` in project
-   `track2-day16-01312`, zone `us-central1-a`, with external IP `34.42.113.234`.
+   `track2-day16-01312`, zone `us-central1-a`. Public access was removed after the
+   endpoint evidence was collected; do not publish a replacement IP.
 9. **Service health** — terminal or API client response from `GET /healthz` showing
    `{"status":"ok"}` and, if available, `systemctl status income-api`.
 10. **Low-income score** — `POST /score` response containing `prediction: 0` and

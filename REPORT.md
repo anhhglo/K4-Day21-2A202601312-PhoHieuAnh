@@ -8,7 +8,8 @@ first runs unit tests, trains from DVC-managed data, publishes the candidate mod
 metrics as an artifact, requires positive-class F1 of at least `0.65`, then deploys the
 approved model to Cloud Storage and the inference service. Production is the
 `income-api` systemd service on VM `income-api` (project `track2-day16-01312`, zone
-`us-central1-a`, public IP `34.42.113.234`); the production object is
+`us-central1-a`). Its external IP was removed and public firewall rule disabled after
+the required endpoint evidence was collected. The production object is
 `gs://k4-day21-2a202601312-phohieuanh/artifacts/current/model.joblib`.
 
 ## Experiments and model choice

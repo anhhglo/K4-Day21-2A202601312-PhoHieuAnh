@@ -16,8 +16,11 @@ The GitHub Actions pipeline has four jobs: `unit-test`, `train`, `quality-gate`,
 ## Deployed environment
 
 The released service runs as `income-api` on Compute Engine VM `income-api` in
-project `track2-day16-01312`, zone `us-central1-a`. The VM public IP is
-`34.42.113.234`; promoted model artifacts are stored in
+project `track2-day16-01312`, zone `us-central1-a`. Public access was disabled after
+the lab verification: the VM has no external IP and the former public `8080` firewall
+rule is disabled. The GitHub deployment host and SSH-key secrets were also removed,
+so future Release jobs remain locked until access is deliberately reconfigured.
+Promoted model artifacts are stored in
 `gs://k4-day21-2a202601312-phohieuanh/artifacts/current/model.joblib`.
 
 Secrets are supplied through GitHub Actions and the VM environment file. Do not put
@@ -31,24 +34,20 @@ pointer, training code, tests, parameters, requirements, or workflow). GitHub Ac
 trains a candidate, blocks release unless positive-class F1 is at least `0.65`, copies
 the approved model to Cloud Storage, and restarts the systemd service.
 
-These non-secret commands are useful for confirming the deployment:
+These non-secret commands are useful for confirming the retained artifacts. Direct
+public `curl` access is intentionally unavailable while the VM is locked.
 
 ```bash
-# Inspect the deployed service (requires an authenticated gcloud account).
-gcloud compute ssh income-api --project=track2-day16-01312 --zone=us-central1-a \
-  --command='sudo systemctl status income-api --no-pager; curl --fail http://127.0.0.1:8080/healthz'
-
 # Check the promoted artifact exists.
 gcloud storage ls gs://k4-day21-2a202601312-phohieuanh/artifacts/current/model.joblib
 
-# Verify the public health endpoint.
-curl --fail http://34.42.113.234:8080/healthz
-
-# Score a ten-feature observation; the response contains prediction and label.
-curl --fail -X POST http://34.42.113.234:8080/score \
-  -H 'content-type: application/json' \
-  -d '{"features":[39,0,13,0,0,40,0,0,0,0]}'
+# Confirm that no external NAT address remains attached.
+gcloud compute instances describe income-api --project=track2-day16-01312 \
+  --zone=us-central1-a --format='yaml(networkInterfaces[0].accessConfigs)'
 ```
+
+The successful Actions runs retain the original health and scoring evidence. Reopen
+network access only temporarily and only for an explicitly approved source CIDR.
 
 ## Teardown (cost control)
 
