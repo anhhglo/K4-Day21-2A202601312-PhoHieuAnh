@@ -4,6 +4,10 @@
 .secrets/
 .env
 .dvc/config.local
+data/*.csv
+!data/train_batch1.csv
+!data/holdout.csv
+!data/train_batch2.csv
 models/
 outputs/
 mlflow.db
