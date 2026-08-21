@@ -78,3 +78,30 @@ def test_append_batch_concatenates_once_and_rejects_duplicate_append(tmp_path):
     assert appended["age"].tolist() == [20, 21, 22, 23, 120, 121, 122, 123]
     with pytest.raises(ValueError, match="^train_batch1 already contains batch2$"):
         append_batch(batch1_path, batch2_path)
+
+
+def test_append_batch_rejects_identical_batch_files(tmp_path):
+    batch1_path = tmp_path / "train_batch1.csv"
+    batch2_path = tmp_path / "train_batch2.csv"
+    batch = _canonical_frame(4)
+    batch.to_csv(batch1_path, index=False)
+    batch.to_csv(batch2_path, index=False)
+
+    with pytest.raises(ValueError, match="^train_batch1 already contains batch2$"):
+        append_batch(batch1_path, batch2_path)
+
+    assert len(pd.read_csv(batch1_path)) == 4
+
+
+def test_append_batch_rejects_contained_rows_in_a_different_order(tmp_path):
+    batch1_path = tmp_path / "train_batch1.csv"
+    batch2_path = tmp_path / "train_batch2.csv"
+    batch1 = _canonical_frame(4)
+    batch2 = batch1.sample(frac=1, random_state=7).reset_index(drop=True)
+    batch1.to_csv(batch1_path, index=False)
+    batch2.to_csv(batch2_path, index=False)
+
+    with pytest.raises(ValueError, match="^train_batch1 already contains batch2$"):
+        append_batch(batch1_path, batch2_path)
+
+    assert len(pd.read_csv(batch1_path)) == 4

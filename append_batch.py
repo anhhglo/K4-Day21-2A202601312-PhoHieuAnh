@@ -1,3 +1,4 @@
+from collections import Counter
 import os
 import tempfile
 from pathlib import Path
@@ -21,9 +22,9 @@ def append_batch(path1: str | Path, path2: str | Path) -> None:
     batch1 = _read_canonical_csv(batch1_path)
     batch2 = _read_canonical_csv(batch2_path)
 
-    if len(batch1) == 2 * len(batch2) and batch1.iloc[-len(batch2) :].reset_index(
-        drop=True
-    ).equals(batch2.reset_index(drop=True)):
+    batch1_records = Counter(batch1.itertuples(index=False, name=None))
+    batch2_records = Counter(batch2.itertuples(index=False, name=None))
+    if batch2_records <= batch1_records:
         raise ValueError("train_batch1 already contains batch2")
     if len(batch1) != len(batch2):
         raise ValueError("train_batch1 and train_batch2 must have equal row counts")
